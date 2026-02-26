@@ -6,9 +6,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum LeaveStatus {
-    PENDING("pending"),
-    APPROVED("approved"),
-    REJECTED("rejected");
+    PENDING,
+    APPROVED,
+    REJECTED;
 
-    private final String status;
 }

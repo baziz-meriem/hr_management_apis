@@ -8,6 +8,7 @@ import com.employee.management.leave.dto.LeaveResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,7 +22,7 @@ public interface EmployeeController {
     ResponseEntity<EmployeeResponse> create(@RequestBody EmployeeCreateRequest request);
 
     @Operation(summary = "List employees", description = "Returns a paginated list of active employees")
-    ResponseEntity<org.springframework.data.domain.Page<EmployeeResponse>> getAll(
+    ResponseEntity<Page<EmployeeResponse>> getAll(
             @Parameter(description = "Zero-based page index") @RequestParam(defaultValue = "0") int page,
             @Parameter(description = "Page size (1–100)") @RequestParam(defaultValue = "20") int size);
 
