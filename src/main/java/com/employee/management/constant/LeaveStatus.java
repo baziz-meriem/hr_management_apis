@@ -1,4 +1,4 @@
-package com.employee.management.common.constant;
+package com.employee.management.constant;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,7 +8,7 @@ import lombok.Getter;
 public enum LeaveStatus {
     PENDING("pending"),
     APPROVED("approved"),
-    rejected("rejected");
+    REJECTED("rejected");
 
     private final String status;
 }

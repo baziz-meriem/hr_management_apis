@@ -1,7 +1,7 @@
 package com.employee.management.entity.leave;
 
-import com.employee.management.common.constant.LeaveStatus;
-import com.employee.management.common.constant.LeaveType;
+import com.employee.management.constant.LeaveStatus;
+import com.employee.management.constant.LeaveType;
 import com.employee.management.entity.BaseEntity;
 import com.employee.management.entity.employee.Employee;
 import jakarta.persistence.Entity;

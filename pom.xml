@@ -105,6 +105,16 @@
 					</excludes>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.flywaydb.flyway</groupId>
+				<artifactId>flyway-maven-plugin</artifactId>
+				<configuration>
+					<url>jdbc:postgresql://localhost:5432/hr_db</url>
+					<user>postgres</user>
+					<password>secret</password>
+					<locations>classpath:db/migration</locations>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 

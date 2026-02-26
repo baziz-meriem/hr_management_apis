@@ -1,4 +1,3 @@
--- Employee (no FK to employment_details; EmploymentDetails owns the 1:1 via employee_id)
 CREATE TABLE employee (
     id VARCHAR(36) PRIMARY KEY,
     first_name VARCHAR(255),
@@ -9,7 +8,6 @@ CREATE TABLE employee (
     deleted_at TIMESTAMP
 );
 
--- EmploymentDetails: 1:1 with Employee (FK on this side)
 CREATE TABLE employment_details (
     id VARCHAR(36) PRIMARY KEY,
     hire_date DATE,
@@ -24,7 +22,6 @@ CREATE TABLE employment_details (
 
 CREATE INDEX idx_employment_details_employee_id ON employment_details(employee_id);
 
--- Compensation: N:1 to Employee
 CREATE TABLE compensation (
     id VARCHAR(36) PRIMARY KEY,
     salary DECIMAL(19, 2),
@@ -38,7 +35,6 @@ CREATE TABLE compensation (
 
 CREATE INDEX idx_compensation_employee_id ON compensation(employee_id);
 
--- LeaveRequest: N:1 to Employee
 CREATE TABLE leave_request (
     id VARCHAR(36) PRIMARY KEY,
     start_date DATE,

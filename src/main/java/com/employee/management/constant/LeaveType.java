@@ -1,4 +1,4 @@
-package com.employee.management.common.constant;
+package com.employee.management.constant;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

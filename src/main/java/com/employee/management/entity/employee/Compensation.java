@@ -16,7 +16,7 @@ import java.math.BigDecimal;
 
 /***
  *
- * Assumption: Compensation is representing the monthly compensation which varries based on bonuses ,raises,
+ * Assumption: Compensation is representing the monthly compensation which varries based on bonuses ,raises ect
  */
 @Getter
 @Setter

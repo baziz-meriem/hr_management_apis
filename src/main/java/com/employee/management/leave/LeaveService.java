@@ -1,7 +1,15 @@
 package com.employee.management.leave;
 
-import org.springframework.stereotype.Service;
+import com.employee.management.entity.leave.LeaveRequest;
+import com.employee.management.leave.dto.LeaveCreateRequest;
 
-@Service
-public class LeaveService {
+public interface LeaveService {
+
+    LeaveRequest create(LeaveCreateRequest request);
+
+    LeaveRequest getById(String id);
+
+    LeaveRequest approve(String id);
+
+    LeaveRequest reject(String id);
 }
