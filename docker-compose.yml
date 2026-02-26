@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: hr-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: hr_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - hr_db_data:/var/lib/postgresql/data
+
+volumes:
+  hr_db_data:
