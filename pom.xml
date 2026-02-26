@@ -40,6 +40,10 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-aop</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 		<dependency>
@@ -106,8 +110,9 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.flywaydb.flyway</groupId>
+				<groupId>org.flywaydb</groupId>
 				<artifactId>flyway-maven-plugin</artifactId>
+				<version>11.7.2</version>
 				<configuration>
 					<url>jdbc:postgresql://localhost:5432/hr_db</url>
 					<user>postgres</user>

@@ -18,17 +18,19 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/employees")
+@RequestMapping(value = "/employees", headers = "X-API-Version=1")
 @RequiredArgsConstructor
-public class EmployeeController {
+public class EmployeeController implements EmployeeControllerApi {
 
     private final EmployeeService employeeService;
 
+    @Override
     @PostMapping
     public ResponseEntity<Employee> create(@Valid @RequestBody EmployeeCreateRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(employeeService.create(request));
     }
 
+    @Override
     @GetMapping
     public ResponseEntity<Page<Employee>> getAll(
             @RequestParam(defaultValue = "0") int page,
@@ -38,28 +40,33 @@ public class EmployeeController {
         return ResponseEntity.ok(employeeService.getAll(pageable));
     }
 
+    @Override
     @GetMapping("/{id}")
     public ResponseEntity<Employee> getById(@PathVariable String id) {
         return ResponseEntity.ok(employeeService.getById(id));
     }
 
+    @Override
     @PatchMapping("/{id}")
     public ResponseEntity<Employee> update(@PathVariable String id,
                                           @Valid @RequestBody EmployeeUpdateRequest request) {
         return ResponseEntity.ok(employeeService.update(id, request));
     }
 
+    @Override
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteById(@PathVariable String id) {
         employeeService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
+    @Override
     @GetMapping("/{id}/leave")
     public ResponseEntity<List<LeaveRequest>> getLeaveByEmployeeId(@PathVariable String id) {
         return ResponseEntity.ok(employeeService.getLeaveByEmployeeId(id));
     }
 
+    @Override
     @PostMapping("/{id}/leave")
     public ResponseEntity<LeaveRequest> createLeaveForEmployee(@PathVariable String id,
                                                                @Valid @RequestBody LeaveCreateRequest request) {

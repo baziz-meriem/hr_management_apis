@@ -9,27 +9,31 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/leaves")
+@RequestMapping(value = "/leaves", headers = "X-API-Version=1")
 @RequiredArgsConstructor
-public class LeaveController {
+public class LeaveController implements LeaveControllerApi {
 
     private final LeaveService leaveService;
 
+    @Override
     @PostMapping
     public ResponseEntity<LeaveRequest> create(@Valid @RequestBody LeaveCreateRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(leaveService.create(request));
     }
 
+    @Override
     @GetMapping("/{id}")
     public ResponseEntity<LeaveRequest> getById(@PathVariable String id) {
         return ResponseEntity.ok(leaveService.getById(id));
     }
 
+    @Override
     @PatchMapping("/{id}/approve")
     public ResponseEntity<LeaveRequest> approve(@PathVariable String id) {
         return ResponseEntity.ok(leaveService.approve(id));
     }
 
+    @Override
     @PatchMapping("/{id}/reject")
     public ResponseEntity<LeaveRequest> reject(@PathVariable String id) {
         return ResponseEntity.ok(leaveService.reject(id));

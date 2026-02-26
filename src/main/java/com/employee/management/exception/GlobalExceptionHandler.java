@@ -1,103 +1,87 @@
 package com.employee.management.exception;
 
-import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import java.time.Instant;
 import java.util.List;
 
 @RestControllerAdvice
-public class GlobalExceptionHandler {
+public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiError> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest request) {
-        List<ApiError.FieldError> errors = ex.getBindingResult().getFieldErrors().stream()
-                .map(fe -> new ApiError.FieldError(fe.getField(), fe.getDefaultMessage()))
-                .toList();
-        ApiError body = new ApiError(
-                Instant.now(),
-                HttpStatus.BAD_REQUEST.value(),
-                "Validation failed",
-                request.getRequestURI(),
-                errors
-        );
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    private final MessageSource messageSource;
+
+    public GlobalExceptionHandler(MessageSource messageSource) {
+        this.messageSource = messageSource;
     }
 
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ApiError> handleBadRequestBody(HttpMessageNotReadableException ex, HttpServletRequest request) {
-        ApiError body = new ApiError(
-                Instant.now(),
-                HttpStatus.BAD_REQUEST.value(),
-                "Invalid request body",
-                request.getRequestURI(),
-                null
-        );
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(
+            MethodArgumentNotValidException ex,
+            HttpHeaders headers,
+            HttpStatusCode status,
+            WebRequest request) {
+        return buildResponseEntity(
+                getValidationErrors(ex.getBindingResult().getFieldErrors()),
+                "Invalid request",
+                "validation.failed",
+                HttpStatus.BAD_REQUEST);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(
+            HttpMessageNotReadableException ex,
+            HttpHeaders headers,
+            HttpStatusCode status,
+            WebRequest request) {
+        return buildResponseEntity(null, "Invalid request body", "invalid.request.body", HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ApiError> handleTypeMismatch(MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
-        String message = ex.getName() + " has invalid value";
-        ApiError body = new ApiError(
-                Instant.now(),
-                HttpStatus.BAD_REQUEST.value(),
-                message,
-                request.getRequestURI(),
-                null
-        );
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    public ResponseEntity<Object> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        return buildResponseEntity(null, ex.getName() + " has invalid value", "invalid.parameter.value", HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ApiError> handleNotFound(ResourceNotFoundException ex, HttpServletRequest request) {
-        ApiError body = new ApiError(
-                Instant.now(),
-                HttpStatus.NOT_FOUND.value(),
-                ex.getMessage(),
-                request.getRequestURI(),
-                null
-        );
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    public ResponseEntity<Object> handleNotFound(ResourceNotFoundException ex) {
+        return buildResponseEntity(null, ex.getMessage(), "resource.not.found", HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(InvalidLeaveStateException.class)
-    public ResponseEntity<ApiError> handleInvalidLeaveState(InvalidLeaveStateException ex, HttpServletRequest request) {
-        ApiError body = new ApiError(
-                Instant.now(),
-                HttpStatus.BAD_REQUEST.value(),
-                ex.getMessage(),
-                request.getRequestURI(),
-                null
-        );
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    public ResponseEntity<Object> handleInvalidLeaveState(InvalidLeaveStateException ex) {
+        return buildResponseEntity(null, ex.getMessage(), "invalid.leave.state", HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiError> handleAny(Exception ex, HttpServletRequest request) {
-        ApiError body = new ApiError(
-                Instant.now(),
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "An unexpected error occurred",
-                request.getRequestURI(),
-                null
-        );
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+    public ResponseEntity<Object> handleAny(Exception ex) {
+        return buildResponseEntity(null, "An unexpected error occurred", "internal.server.error", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    public record ApiError(
-            Instant timestamp,
-            int status,
-            String message,
-            String path,
-            List<FieldError> errors
-    ) {
-        public record FieldError(String field, String message) {}
+    private List<ApiSubError> getValidationErrors(List<FieldError> fieldErrors) {
+        return fieldErrors.stream()
+                .map(fe -> new ApiSubError(fe.getField(), fe.getDefaultMessage()))
+                .toList();
+    }
+
+    private ResponseEntity<Object> buildResponseEntity(List<ApiSubError> subErrors,
+                                                       String defaultMessage,
+                                                       String errorMessageKey,
+                                                       HttpStatus status) {
+        ApiError apiError = new ApiError(status);
+        apiError.setErrorMessageKey(errorMessageKey);
+        apiError.setMessage(messageSource.getMessage(errorMessageKey, null, defaultMessage, LocaleContextHolder.getLocale()));
+        apiError.setSubErrors(subErrors);
+        return new ResponseEntity<>(apiError, apiError.getStatus());
     }
 }
