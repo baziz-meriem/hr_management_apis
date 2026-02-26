@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -15,6 +16,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestControllerAdvice
@@ -32,8 +34,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             HttpHeaders headers,
             HttpStatusCode status,
             WebRequest request) {
+        List<ApiSubError> subErrors = getValidationErrors(
+                ex.getBindingResult().getFieldErrors(),
+                ex.getBindingResult().getGlobalErrors());
         return buildResponseEntity(
-                getValidationErrors(ex.getBindingResult().getFieldErrors()),
+                subErrors,
                 "Invalid request",
                 "validation.failed",
                 HttpStatus.BAD_REQUEST);
@@ -60,7 +65,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(InvalidLeaveStateException.class)
     public ResponseEntity<Object> handleInvalidLeaveState(InvalidLeaveStateException ex) {
-        return buildResponseEntity(null, ex.getMessage(), "invalid.leave.state", HttpStatus.BAD_REQUEST);
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST);
+        apiError.setErrorMessageKey("invalid.leave.state");
+        apiError.setMessage(ex.getMessage());
+        apiError.setSubErrors(null);
+        return new ResponseEntity<>(apiError, apiError.getStatus());
     }
 
     @ExceptionHandler(Exception.class)
@@ -68,10 +77,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return buildResponseEntity(null, "An unexpected error occurred", "internal.server.error", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    private List<ApiSubError> getValidationErrors(List<FieldError> fieldErrors) {
-        return fieldErrors.stream()
-                .map(fe -> new ApiSubError(fe.getField(), fe.getDefaultMessage()))
-                .toList();
+    private List<ApiSubError> getValidationErrors(List<FieldError> fieldErrors, List<ObjectError> globalErrors) {
+        List<ApiSubError> subErrors = new ArrayList<>();
+        fieldErrors.forEach(fe -> subErrors.add(new ApiSubError(fe.getField(), fe.getDefaultMessage())));
+        globalErrors.forEach(ge -> subErrors.add(new ApiSubError("request", ge.getDefaultMessage())));
+        return subErrors;
     }
 
     private ResponseEntity<Object> buildResponseEntity(List<ApiSubError> subErrors,

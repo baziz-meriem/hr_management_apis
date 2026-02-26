@@ -4,6 +4,7 @@ import com.employee.management.entity.BaseEntity;
 import com.employee.management.entity.leave.LeaveRequest;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
@@ -37,6 +38,6 @@ public class Employee
     private EmploymentDetails employmentDetails;
 
 
-    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<LeaveRequest> leaveRequests = new ArrayList<>();
 }

@@ -1,15 +1,15 @@
 package com.employee.management.leave;
 
-import com.employee.management.entity.leave.LeaveRequest;
 import com.employee.management.leave.dto.LeaveCreateRequest;
+import com.employee.management.leave.dto.LeaveResponse;
 
 public interface LeaveService {
 
-    LeaveRequest create(LeaveCreateRequest request);
+    LeaveResponse create(LeaveCreateRequest request);
 
-    LeaveRequest getById(String id);
+    LeaveResponse getById(String id);
 
-    LeaveRequest approve(String id);
+    LeaveResponse approve(String id);
 
-    LeaveRequest reject(String id);
+    LeaveResponse reject(String id);
 }

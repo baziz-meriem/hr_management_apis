@@ -1,10 +1,10 @@
 package com.employee.management.employee;
 
 import com.employee.management.employee.dto.EmployeeCreateRequest;
+import com.employee.management.employee.dto.EmployeeResponse;
 import com.employee.management.employee.dto.EmployeeUpdateRequest;
-import com.employee.management.entity.employee.Employee;
-import com.employee.management.entity.leave.LeaveRequest;
 import com.employee.management.leave.dto.LeaveCreateRequest;
+import com.employee.management.leave.dto.LeaveResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,13 +26,13 @@ public class EmployeeControllerImpl implements EmployeeController {
 
     @Override
     @PostMapping
-    public ResponseEntity<Employee> create(@Valid @RequestBody EmployeeCreateRequest request) {
+    public ResponseEntity<EmployeeResponse> create(@Valid @RequestBody EmployeeCreateRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(employeeService.create(request));
     }
 
     @Override
     @GetMapping
-    public ResponseEntity<Page<Employee>> getAll(
+    public ResponseEntity<Page<EmployeeResponse>> getAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         int safeSize = Math.min(Math.max(1, size), 100);
@@ -42,14 +42,14 @@ public class EmployeeControllerImpl implements EmployeeController {
 
     @Override
     @GetMapping("/{id}")
-    public ResponseEntity<Employee> getById(@PathVariable String id) {
+    public ResponseEntity<EmployeeResponse> getById(@PathVariable String id) {
         return ResponseEntity.ok(employeeService.getById(id));
     }
 
     @Override
     @PatchMapping("/{id}")
-    public ResponseEntity<Employee> update(@PathVariable String id,
-                                          @Valid @RequestBody EmployeeUpdateRequest request) {
+    public ResponseEntity<EmployeeResponse> update(@PathVariable String id,
+                                                    @Valid @RequestBody EmployeeUpdateRequest request) {
         return ResponseEntity.ok(employeeService.update(id, request));
     }
 
@@ -62,14 +62,14 @@ public class EmployeeControllerImpl implements EmployeeController {
 
     @Override
     @GetMapping("/{id}/leave")
-    public ResponseEntity<List<LeaveRequest>> getLeaveByEmployeeId(@PathVariable String id) {
+    public ResponseEntity<List<LeaveResponse>> getLeaveByEmployeeId(@PathVariable String id) {
         return ResponseEntity.ok(employeeService.getLeaveByEmployeeId(id));
     }
 
     @Override
     @PostMapping("/{id}/leave")
-    public ResponseEntity<LeaveRequest> createLeaveForEmployee(@PathVariable String id,
-                                                              @Valid @RequestBody LeaveCreateRequest request) {
+    public ResponseEntity<LeaveResponse> createLeaveForEmployee(@PathVariable String id,
+                                                                @Valid @RequestBody LeaveCreateRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(employeeService.createLeaveForEmployee(id, request));
     }
 }
