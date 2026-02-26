@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class LoggingAspect {
 
-    @Before("execution(* com.employee.management..*Controller.*(..)) " +
+    @Before("execution(* com.employee.management..*Controller*.*(..)) " +
             "|| execution(* com.employee.management..*Service.*(..))")
     public void logMethodName(JoinPoint joinPoint) {
         String methodName = getMethodName(joinPoint);

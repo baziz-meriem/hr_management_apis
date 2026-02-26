@@ -5,71 +5,38 @@ import com.employee.management.employee.dto.EmployeeUpdateRequest;
 import com.employee.management.entity.employee.Employee;
 import com.employee.management.entity.leave.LeaveRequest;
 import com.employee.management.leave.dto.LeaveCreateRequest;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-@RestController
-@RequestMapping(value = "/employees", headers = "X-API-Version=1")
-@RequiredArgsConstructor
-public class EmployeeController implements EmployeeControllerApi {
+@Tag(name = "Employees", description = "Employee management API")
+public interface EmployeeController {
 
-    private final EmployeeService employeeService;
+    @Operation(summary = "Create employee", description = "Creates a new employee with personal information")
+    ResponseEntity<Employee> create(@RequestBody EmployeeCreateRequest request);
 
-    @Override
-    @PostMapping
-    public ResponseEntity<Employee> create(@Valid @RequestBody EmployeeCreateRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(employeeService.create(request));
-    }
+    @Operation(summary = "List employees", description = "Returns a paginated list of active employees")
+    ResponseEntity<org.springframework.data.domain.Page<Employee>> getAll(
+            @Parameter(description = "Zero-based page index") @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Page size (1–100)") @RequestParam(defaultValue = "20") int size);
 
-    @Override
-    @GetMapping
-    public ResponseEntity<Page<Employee>> getAll(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
-        int safeSize = Math.min(Math.max(1, size), 100);
-        Pageable pageable = PageRequest.of(page, safeSize, Sort.by("firstName").ascending());
-        return ResponseEntity.ok(employeeService.getAll(pageable));
-    }
+    @Operation(summary = "Get employee by ID", description = "Returns a single employee by id")
+    ResponseEntity<Employee> getById(@Parameter(description = "Employee UUID") String id);
 
-    @Override
-    @GetMapping("/{id}")
-    public ResponseEntity<Employee> getById(@PathVariable String id) {
-        return ResponseEntity.ok(employeeService.getById(id));
-    }
+    @Operation(summary = "Update employee", description = "Partially updates an employee")
+    ResponseEntity<Employee> update(String id, @RequestBody EmployeeUpdateRequest request);
 
-    @Override
-    @PatchMapping("/{id}")
-    public ResponseEntity<Employee> update(@PathVariable String id,
-                                          @Valid @RequestBody EmployeeUpdateRequest request) {
-        return ResponseEntity.ok(employeeService.update(id, request));
-    }
+    @Operation(summary = "Delete employee", description = "Soft-deletes an employee")
+    ResponseEntity<Void> deleteById(@Parameter(description = "Employee UUID") String id);
 
-    @Override
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteById(@PathVariable String id) {
-        employeeService.deleteById(id);
-        return ResponseEntity.noContent().build();
-    }
+    @Operation(summary = "Get leave by employee", description = "Returns all leave requests for an employee")
+    ResponseEntity<List<LeaveRequest>> getLeaveByEmployeeId(@Parameter(description = "Employee UUID") String id);
 
-    @Override
-    @GetMapping("/{id}/leave")
-    public ResponseEntity<List<LeaveRequest>> getLeaveByEmployeeId(@PathVariable String id) {
-        return ResponseEntity.ok(employeeService.getLeaveByEmployeeId(id));
-    }
-
-    @Override
-    @PostMapping("/{id}/leave")
-    public ResponseEntity<LeaveRequest> createLeaveForEmployee(@PathVariable String id,
-                                                               @Valid @RequestBody LeaveCreateRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(employeeService.createLeaveForEmployee(id, request));
-    }
+    @Operation(summary = "Create leave for employee", description = "Submits a new leave request for an employee")
+    ResponseEntity<LeaveRequest> createLeaveForEmployee(String id, @RequestBody LeaveCreateRequest request);
 }
