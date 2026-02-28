@@ -6,6 +6,7 @@ import com.employee.management.employee.dto.EmployeeResponse;
 import com.employee.management.employee.dto.EmployeeUpdateRequest;
 import com.employee.management.entity.employee.Employee;
 import com.employee.management.entity.leave.LeaveRequest;
+import com.employee.management.exception.DuplicateResourceException;
 import com.employee.management.exception.EmployeeNotFoundException;
 import com.employee.management.exception.LeaveRequestNotFoundException;
 import com.employee.management.leave.LeaveMapper;
@@ -35,6 +36,9 @@ public class EmployeeServiceImpl
     @Override
     @Transactional
     public EmployeeResponse create(EmployeeCreateRequest request) {
+        if (employeeRepository.existsByEmailAndDeletedAtIsNull(request.getEmail())) {
+            throw new DuplicateResourceException("Employee with this email already exists");
+        }
         Employee employee = Employee.builder()
                                     .firstName(request.getFirstName())
                                     .lastName(request.getLastName())
@@ -100,13 +104,18 @@ public class EmployeeServiceImpl
     public LeaveResponse createLeaveForEmployee(String employeeId,
                                                 LeaveCreateRequest request) {
         Employee employee = employeeRepository.findByIdAndDeletedAtIsNull(employeeId)
-                                              .orElseThrow(EmployeeNotFoundException::new);
+                .orElseThrow(EmployeeNotFoundException::new);
+
+        if (leaveRepository.existsOverlappingLeave(employeeId, request.getStartDate(), request.getEndDate(),
+                List.of(LeaveStatus.PENDING, LeaveStatus.APPROVED))) {
+            throw new DuplicateResourceException("Leave already exists for this employee with overlapping dates");
+        }
         LeaveRequest leave = LeaveRequest.builder()
-                                         .startDate(request.getStartDate())
-                                         .endDate(request.getEndDate())
-                                         .type(request.getType())
-                                         .employee(employee)
-                                         .build();
+                .startDate(request.getStartDate())
+                .endDate(request.getEndDate())
+                .type(request.getType())
+                .employee(employee)
+                .build();
         LeaveRequest saved = leaveRepository.save(leave);
         return leaveMapper.toResponse(saved);
     }

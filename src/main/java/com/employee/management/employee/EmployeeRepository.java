@@ -16,4 +16,6 @@ public interface EmployeeRepository
 
     Optional<Employee> findByIdAndDeletedAtIsNull(String id);
 
+    boolean existsByEmailAndDeletedAtIsNull(String email);
+
 }

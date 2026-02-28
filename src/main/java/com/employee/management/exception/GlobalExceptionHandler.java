@@ -1,7 +1,6 @@
 package com.employee.management.exception;
 
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
+import com.employee.management.constant.ErrorMessageKey;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -20,13 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestControllerAdvice
-public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
-
-    private final MessageSource messageSource;
-
-    public GlobalExceptionHandler(MessageSource messageSource) {
-        this.messageSource = messageSource;
-    }
+public class GlobalExceptionHandler
+        extends ResponseEntityExceptionHandler {
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
@@ -34,14 +28,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             HttpHeaders headers,
             HttpStatusCode status,
             WebRequest request) {
+
         List<ApiSubError> subErrors = getValidationErrors(
                 ex.getBindingResult().getFieldErrors(),
                 ex.getBindingResult().getGlobalErrors());
-        return buildResponseEntity(
-                subErrors,
-                "Invalid request",
-                "validation.failed",
-                HttpStatus.BAD_REQUEST);
+
+        return buildResponseEntity(subErrors, ErrorMessageKey.VALIDATION_FAILED, HttpStatus.BAD_REQUEST, null);
     }
 
     @Override
@@ -50,34 +42,40 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             HttpHeaders headers,
             HttpStatusCode status,
             WebRequest request) {
-        return buildResponseEntity(null, "Invalid request body", "invalid.request.body", HttpStatus.BAD_REQUEST);
+        return buildResponseEntity(null, ErrorMessageKey.INVALID_REQUEST_BODY, HttpStatus.BAD_REQUEST, null);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<Object> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
-        return buildResponseEntity(null, ex.getName() + " has invalid value", "invalid.parameter.value", HttpStatus.BAD_REQUEST);
+        return buildResponseEntity(null, ErrorMessageKey.INVALID_PARAMETER_VALUE, HttpStatus.BAD_REQUEST,
+                ex.getName() + " has invalid value");
     }
 
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<Object> handleNotFound(ResourceNotFoundException ex) {
-        return buildResponseEntity(null, ex.getMessage(), "resource.not.found", HttpStatus.NOT_FOUND);
+    @ExceptionHandler({
+            EmployeeNotFoundException.class,
+            LeaveRequestNotFoundException.class
+    })
+    public ResponseEntity<Object> handleNotFound(RuntimeException ex) {
+        return buildResponseEntity(null, ErrorMessageKey.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<Object> handleDuplicate(DuplicateResourceException ex) {
+        return buildResponseEntity(null, ErrorMessageKey.RESOURCE_ALREADY_EXISTS, HttpStatus.CONFLICT, ex.getMessage());
     }
 
     @ExceptionHandler(InvalidLeaveStateException.class)
     public ResponseEntity<Object> handleInvalidLeaveState(InvalidLeaveStateException ex) {
-        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST);
-        apiError.setErrorMessageKey("invalid.leave.state");
-        apiError.setMessage(ex.getMessage());
-        apiError.setSubErrors(null);
-        return new ResponseEntity<>(apiError, apiError.getStatus());
+        return buildResponseEntity(null, ErrorMessageKey.INVALID_LEAVE_STATE, HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleAny(Exception ex) {
-        return buildResponseEntity(null, "An unexpected error occurred", "internal.server.error", HttpStatus.INTERNAL_SERVER_ERROR);
+        return buildResponseEntity(null, ErrorMessageKey.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR, null);
     }
 
-    private List<ApiSubError> getValidationErrors(List<FieldError> fieldErrors, List<ObjectError> globalErrors) {
+    private List<ApiSubError> getValidationErrors(List<FieldError> fieldErrors,
+                                                  List<ObjectError> globalErrors) {
         List<ApiSubError> subErrors = new ArrayList<>();
         fieldErrors.forEach(fe -> subErrors.add(new ApiSubError(fe.getField(), fe.getDefaultMessage())));
         globalErrors.forEach(ge -> subErrors.add(new ApiSubError("request", ge.getDefaultMessage())));
@@ -85,12 +83,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     private ResponseEntity<Object> buildResponseEntity(List<ApiSubError> subErrors,
-                                                       String defaultMessage,
-                                                       String errorMessageKey,
-                                                       HttpStatus status) {
+                                                       ErrorMessageKey errorKey,
+                                                       HttpStatus status,
+                                                       String messageOverride) {
         ApiError apiError = new ApiError(status);
-        apiError.setErrorMessageKey(errorMessageKey);
-        apiError.setMessage(messageSource.getMessage(errorMessageKey, null, defaultMessage, LocaleContextHolder.getLocale()));
+        apiError.setErrorMessageKey(errorKey.getKey());
+        apiError.setMessage(messageOverride != null ? messageOverride : errorKey.getMessage());
         apiError.setSubErrors(subErrors);
         return new ResponseEntity<>(apiError, apiError.getStatus());
     }
