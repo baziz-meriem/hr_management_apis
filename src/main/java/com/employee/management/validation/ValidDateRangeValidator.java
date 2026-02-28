@@ -29,6 +29,10 @@ public class ValidDateRangeValidator
             return false;
         }
         if (end.isBefore(start)) {
+            context.disableDefaultConstraintViolation();
+            context.buildConstraintViolationWithTemplate("End date must not be before start date")
+                    .addPropertyNode("endDate")
+                    .addConstraintViolation();
             return false;
         }
         return true;

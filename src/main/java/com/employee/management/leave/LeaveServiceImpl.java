@@ -18,7 +18,7 @@ public class LeaveServiceImpl
 
     @Override
     public LeaveResponse getById(String id) {
-        LeaveRequest leave = leaveRepository.findById(id)
+        LeaveRequest leave = leaveRepository.findByIdAndDeletedAtIsNull(id)
                                             .orElseThrow(LeaveRequestNotFoundException::new);
         return leaveMapper.toResponse(leave);
     }
@@ -26,7 +26,7 @@ public class LeaveServiceImpl
     @Override
     @Transactional
     public LeaveResponse approve(String id) {
-        LeaveRequest leave = leaveRepository.findById(id)
+        LeaveRequest leave = leaveRepository.findByIdAndDeletedAtIsNull(id)
                                             .orElseThrow(LeaveRequestNotFoundException::new);
         leave.setStatus(leave.getStatus()
                              .transitionTo(LeaveStatus.APPROVED));
@@ -36,7 +36,7 @@ public class LeaveServiceImpl
     @Override
     @Transactional
     public LeaveResponse reject(String id) {
-        LeaveRequest leave = leaveRepository.findById(id)
+        LeaveRequest leave = leaveRepository.findByIdAndDeletedAtIsNull(id)
                                             .orElseThrow(LeaveRequestNotFoundException::new);
         leave.setStatus(leave.getStatus()
                              .transitionTo(LeaveStatus.REJECTED));

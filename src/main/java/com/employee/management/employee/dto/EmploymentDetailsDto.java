@@ -23,7 +23,7 @@ public class EmploymentDetailsDto {
 
     @NotBlank(message = "Department is required")
     @Size(max = 255)
-    private String departement;
+    private String department;
 
     @NotBlank(message = "Position is required")
     @Size(max = 255)

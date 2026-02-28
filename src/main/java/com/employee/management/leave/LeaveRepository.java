@@ -9,10 +9,13 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface LeaveRepository
         extends JpaRepository<LeaveRequest, String> {
+
+    Optional<LeaveRequest> findByIdAndDeletedAtIsNull(String id);
 
     List<LeaveRequest> findAllByEmployeeIdAndDeletedAtIsNull(String employeeId);
 

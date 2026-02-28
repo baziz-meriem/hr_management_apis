@@ -7,6 +7,8 @@ import com.employee.management.leave.dto.LeaveCreateRequest;
 import com.employee.management.leave.dto.LeaveResponse;
 
 import java.util.List;
+import java.util.UUID;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,17 +32,17 @@ public interface EmployeeController {
             @Parameter(description = "Page size (1–100)") @RequestParam(defaultValue = "20") int size);
 
     @Operation(summary = "Get employee by ID", description = "Returns a single employee by id")
-    ResponseEntity<EmployeeResponse> getById(@Parameter(description = "Employee UUID") String id);
+    ResponseEntity<EmployeeResponse> getById(@Parameter(description = "Employee UUID") UUID id);
 
     @Operation(summary = "Update employee", description = "Partially updates an employee")
-    ResponseEntity<EmployeeResponse> update(String id, @RequestBody EmployeeUpdateRequest request);
+    ResponseEntity<EmployeeResponse> update(UUID id, @RequestBody EmployeeUpdateRequest request);
 
     @Operation(summary = "Delete employee", description = "Soft-deletes an employee")
-    ResponseEntity<Void> deleteById(@Parameter(description = "Employee UUID") String id);
+    ResponseEntity<Void> deleteById(@Parameter(description = "Employee UUID") UUID id);
 
     @Operation(summary = "Get leave by employee", description = "Returns leave requests history for an employee")
-    ResponseEntity<List<LeaveResponse>> getLeaveByEmployeeId(@Parameter(description = "Employee UUID") String id);
+    ResponseEntity<List<LeaveResponse>> getLeaveByEmployeeId(@Parameter(description = "Employee UUID") UUID id);
 
     @Operation(summary = "Create leave for employee", description = "Submits a new leave request for an employee")
-    ResponseEntity<LeaveResponse> createLeaveForEmployee(String id, @RequestBody LeaveCreateRequest request);
+    ResponseEntity<LeaveResponse> createLeaveForEmployee(UUID id, @RequestBody LeaveCreateRequest request);
 }

@@ -51,7 +51,7 @@ public class EmployeeServiceImpl
 
         EmploymentDetails details = employmentDetailsRepository.save(EmploymentDetails.builder()
                                                                                       .hireDate(detailsReq.getHireDate())
-                                                                                      .departement(detailsReq.getDepartement())
+                                                                                      .department(detailsReq.getDepartment())
                                                                                       .position(detailsReq.getPosition())
                                                                                       .employee(employee)
                                                                                       .build());
@@ -81,6 +81,10 @@ public class EmployeeServiceImpl
                                    EmployeeUpdateRequest request) {
         Employee employee = employeeRepository.findByIdAndDeletedAtIsNull(id)
                                               .orElseThrow(EmployeeNotFoundException::new);
+        if (request.getEmail() != null && !request.getEmail().equals(employee.getEmail())
+                && employeeRepository.existsByEmailAndDeletedAtIsNull(request.getEmail())) {
+            throw new DuplicateResourceException("Employee with this email already exists");
+        }
         if (request.getFirstName() != null) {
             employee.setFirstName(request.getFirstName());
         }
@@ -98,13 +102,13 @@ public class EmployeeServiceImpl
                                                                    .orElse(null);
             if (details != null) {
                 details.setHireDate(detailsReq.getHireDate());
-                details.setDepartement(detailsReq.getDepartement());
+                details.setDepartment(detailsReq.getDepartment());
                 details.setPosition(detailsReq.getPosition());
                 employmentDetailsRepository.save(details);
             } else {
                 details = EmploymentDetails.builder()
                                            .hireDate(detailsReq.getHireDate())
-                                           .departement(detailsReq.getDepartement())
+                                           .department(detailsReq.getDepartment())
                                            .position(detailsReq.getPosition())
                                            .employee(employee)
                                            .build();

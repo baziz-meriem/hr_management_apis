@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping(value = "/employees", headers = "X-API-Version=1")
@@ -42,34 +43,34 @@ public class EmployeeControllerImpl implements EmployeeController {
 
     @Override
     @GetMapping("/{id}")
-    public ResponseEntity<EmployeeResponse> getById(@PathVariable String id) {
-        return ResponseEntity.ok(employeeService.getById(id));
+    public ResponseEntity<EmployeeResponse> getById(@PathVariable UUID id) {
+        return ResponseEntity.ok(employeeService.getById(id.toString()));
     }
 
     @Override
     @PatchMapping("/{id}")
-    public ResponseEntity<EmployeeResponse> update(@PathVariable String id,
+    public ResponseEntity<EmployeeResponse> update(@PathVariable UUID id,
                                                     @Valid @RequestBody EmployeeUpdateRequest request) {
-        return ResponseEntity.ok(employeeService.update(id, request));
+        return ResponseEntity.ok(employeeService.update(id.toString(), request));
     }
 
     @Override
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteById(@PathVariable String id) {
-        employeeService.deleteById(id);
+    public ResponseEntity<Void> deleteById(@PathVariable UUID id) {
+        employeeService.deleteById(id.toString());
         return ResponseEntity.noContent().build();
     }
 
     @Override
     @GetMapping("/{id}/leave")
-    public ResponseEntity<List<LeaveResponse>> getLeaveByEmployeeId(@PathVariable String id) {
-        return ResponseEntity.ok(employeeService.getLeaveByEmployeeId(id));
+    public ResponseEntity<List<LeaveResponse>> getLeaveByEmployeeId(@PathVariable UUID id) {
+        return ResponseEntity.ok(employeeService.getLeaveByEmployeeId(id.toString()));
     }
 
     @Override
     @PostMapping("/{id}/leave")
-    public ResponseEntity<LeaveResponse> createLeaveForEmployee(@PathVariable String id,
+    public ResponseEntity<LeaveResponse> createLeaveForEmployee(@PathVariable UUID id,
                                                                 @Valid @RequestBody LeaveCreateRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(employeeService.createLeaveForEmployee(id, request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(employeeService.createLeaveForEmployee(id.toString(), request));
     }
 }

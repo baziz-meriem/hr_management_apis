@@ -27,7 +27,7 @@ public class EmploymentDetails
     @UuidGenerator
     private String id;
     private LocalDate hireDate;
-    private String departement;
+    private String department;
     private String position;
 
     @OneToOne
