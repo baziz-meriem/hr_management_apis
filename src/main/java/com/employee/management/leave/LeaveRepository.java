@@ -10,6 +10,6 @@ import java.util.List;
 public interface LeaveRepository
         extends JpaRepository<LeaveRequest, String> {
 
-    List<LeaveRequest> findAllByEmployeeId(String employeeId);
+    List<LeaveRequest> findAllByEmployeeIdDeletedAtIsNull(String employeeId);
 
 }

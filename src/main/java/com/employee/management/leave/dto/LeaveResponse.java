@@ -8,11 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
-
 /**
- * API response for leave. Exposes only the fields required by the consumer;
- * not all entity fields are included.
+ * Assumption : only these fields are needed by the consumer.
  */
 @Getter
 @Setter
@@ -22,9 +19,8 @@ import java.time.LocalDate;
 public class LeaveResponse {
 
     private String id;
-    private LocalDate startDate;
-    private LocalDate endDate;
     private LeaveType type;
     private LeaveStatus status;
     private String employeeId;
+
 }

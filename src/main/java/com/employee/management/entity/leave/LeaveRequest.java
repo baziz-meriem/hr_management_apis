@@ -41,7 +41,8 @@ public class LeaveRequest
     private LeaveType type;
 
     @Enumerated(EnumType.STRING)
-    private LeaveStatus status;
+    @Builder.Default
+    private LeaveStatus status = LeaveStatus.PENDING;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id", nullable = false)

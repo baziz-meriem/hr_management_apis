@@ -7,6 +7,7 @@ import com.employee.management.employee.dto.EmployeeUpdateRequest;
 import com.employee.management.entity.employee.Employee;
 import com.employee.management.entity.leave.LeaveRequest;
 import com.employee.management.exception.EmployeeNotFoundException;
+import com.employee.management.exception.LeaveRequestNotFoundException;
 import com.employee.management.leave.LeaveMapper;
 import com.employee.management.leave.LeaveRepository;
 import com.employee.management.leave.dto.LeaveCreateRequest;
@@ -84,9 +85,11 @@ public class EmployeeServiceImpl
 
     @Override
     public List<LeaveResponse> getLeaveByEmployeeId(String employeeId) {
-        employeeRepository.findByIdAndDeletedAtIsNull(employeeId)
-                          .orElseThrow(EmployeeNotFoundException::new);
-        return leaveRepository.findAllByEmployeeId(employeeId)
+        List<LeaveRequest> leaves = leaveRepository.findAllByEmployeeIdDeletedAtIsNull(employeeId);
+        if (leaves.isEmpty()) {
+            throw new LeaveRequestNotFoundException();
+        }
+        return leaves
                 .stream()
                 .map(leaveMapper::toResponse)
                 .collect(Collectors.toList());
@@ -102,7 +105,6 @@ public class EmployeeServiceImpl
                                          .startDate(request.getStartDate())
                                          .endDate(request.getEndDate())
                                          .type(request.getType())
-                                         .status(LeaveStatus.PENDING)
                                          .employee(employee)
                                          .build();
         LeaveRequest saved = leaveRepository.save(leave);
