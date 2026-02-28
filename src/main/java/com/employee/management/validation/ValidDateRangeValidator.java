@@ -21,18 +21,7 @@ public class ValidDateRangeValidator
             return true;
         }
         LocalDate today = LocalDate.now();
-        if (!start.isAfter(today)) {
-            context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate("Leave start date must be after the current day")
-                    .addPropertyNode("startDate")
-                    .addConstraintViolation();
-            return false;
-        }
-        if (end.isBefore(start)) {
-            context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate("End date must not be before start date")
-                    .addPropertyNode("endDate")
-                    .addConstraintViolation();
+        if (!start.isAfter(today) || end.isBefore(start)) {
             return false;
         }
         return true;
