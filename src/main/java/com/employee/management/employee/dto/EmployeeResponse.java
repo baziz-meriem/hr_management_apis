@@ -7,9 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * Assumption : only id and email are needed by the consumer
+ * Assumption : only Personal information and employment details is needed by the consumer in this context. Compensation is managed separately.
  */
-
 @Getter
 @Setter
 @Builder
@@ -18,5 +17,9 @@ import lombok.Setter;
 public class EmployeeResponse {
 
     private String id;
+    private String firstName;
+    private String lastName;
     private String email;
+    private EmploymentDetailsDto employmentDetails;
+
 }

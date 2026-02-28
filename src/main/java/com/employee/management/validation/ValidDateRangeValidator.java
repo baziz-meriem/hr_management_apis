@@ -20,7 +20,18 @@ public class ValidDateRangeValidator
         if (start == null || end == null) {
             return true;
         }
-        return !end.isBefore(start);
+        LocalDate today = LocalDate.now();
+        if (!start.isAfter(today)) {
+            context.disableDefaultConstraintViolation();
+            context.buildConstraintViolationWithTemplate("Leave start date must be after the current day")
+                    .addPropertyNode("startDate")
+                    .addConstraintViolation();
+            return false;
+        }
+        if (end.isBefore(start)) {
+            return false;
+        }
+        return true;
     }
 
 }

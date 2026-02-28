@@ -1,5 +1,6 @@
 package com.employee.management.employee.dto;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -24,4 +25,7 @@ public class EmployeeUpdateRequest {
     @Email(message = "Email must be valid")
     @Size(max = 255)
     private String email;
+
+    @Valid
+    private EmploymentDetailsDto employmentDetails;
 }

@@ -14,7 +14,7 @@ import java.util.List;
 public interface LeaveRepository
         extends JpaRepository<LeaveRequest, String> {
 
-    List<LeaveRequest> findAllByEmployeeIdDeletedAtIsNull(String employeeId);
+    List<LeaveRequest> findAllByEmployeeIdAndDeletedAtIsNull(String employeeId);
 
     @Query("SELECT COUNT(l) > 0 FROM LeaveRequest l WHERE l.employee.id = :employeeId " +
             "AND l.status IN :statuses AND l.startDate <= :endDate AND l.endDate >= :startDate AND l.deletedAt IS NULL")
