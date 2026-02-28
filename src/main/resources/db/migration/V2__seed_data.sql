@@ -4,6 +4,12 @@ INSERT INTO employee (id, first_name, last_name, email, created_at, updated_at, 
 ('e1000000-0000-0000-0000-000000000002', 'Bob', 'Jones', 'bob.jones@example.com', NOW(), NOW(), NULL),
 ('e1000000-0000-0000-0000-000000000003', 'Carol', 'Williams', 'carol.williams@example.com', NOW(), NOW(), NULL);
 
+-- Employment details
+INSERT INTO employment_details (id, hire_date, departement, position, employee_id, created_at, updated_at, deleted_at) VALUES
+('ed000000-0000-0000-0000-000000000001', CURRENT_DATE - 365, 'Engineering', 'Software Developer', 'e1000000-0000-0000-0000-000000000001', NOW(), NOW(), NULL),
+('ed000000-0000-0000-0000-000000000002', CURRENT_DATE - 180, 'Product', 'Product Manager', 'e1000000-0000-0000-0000-000000000002', NOW(), NOW(), NULL),
+('ed000000-0000-0000-0000-000000000003', CURRENT_DATE - 90, 'Engineering', 'QA Engineer', 'e1000000-0000-0000-0000-000000000003', NOW(), NOW(), NULL);
+
 -- Leave requests
 INSERT INTO leave_request (id, start_date, end_date, type, status, employee_id, created_at, updated_at, deleted_at) VALUES
 ('l1000000-0000-0000-0000-000000000001', CURRENT_DATE + 7,  CURRENT_DATE + 9,  'ANNUAL_LEAVE', 'PENDING',   'e1000000-0000-0000-0000-000000000001', NOW(), NOW(), NULL),

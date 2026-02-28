@@ -2,8 +2,6 @@ package com.employee.management.leave.dto;
 
 import com.employee.management.constant.LeaveType;
 import com.employee.management.validation.ValidDateRange;
-import com.employee.management.validation.ValidUuid;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,8 +27,4 @@ public class LeaveCreateRequest {
 
     @NotNull(message = "Leave type is required")
     private LeaveType type;
-
-    @NotBlank(message = "Employee id is required")
-    @ValidUuid(message = "Employee id must be a valid UUID")
-    private String employeeId;
 }

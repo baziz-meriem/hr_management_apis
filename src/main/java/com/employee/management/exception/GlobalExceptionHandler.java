@@ -87,7 +87,7 @@ public class GlobalExceptionHandler
                                                        HttpStatus status,
                                                        String messageOverride) {
         ApiError apiError = new ApiError(status);
-        apiError.setErrorMessageKey(errorKey.getKey());
+        apiError.setErrorMessageKey(errorKey.toString());
         apiError.setMessage(messageOverride != null ? messageOverride : errorKey.getMessage());
         apiError.setSubErrors(subErrors);
         return new ResponseEntity<>(apiError, apiError.getStatus());

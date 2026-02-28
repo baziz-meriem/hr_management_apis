@@ -12,11 +12,10 @@ import org.mapstruct.MappingConstants;
 public interface EmployeeMapper {
 
     @Mapping(target = "id", source = "employee.id")
-    @Mapping(target = "firstName", source = "employee.firstName")
-    @Mapping(target = "lastName", source = "employee.lastName")
-    @Mapping(target = "email", source = "employee.email")
     @Mapping(target = "employmentDetails", source = "employmentDetails")
-    EmployeeResponse toResponse(Employee employee, EmploymentDetails employmentDetails);
+    EmployeeResponse toResponse(Employee employee,
+                                EmploymentDetails employmentDetails);
 
     EmploymentDetailsDto toDetailsDto(EmploymentDetails details);
+
 }

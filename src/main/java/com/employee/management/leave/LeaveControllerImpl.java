@@ -1,10 +1,7 @@
 package com.employee.management.leave;
 
-import com.employee.management.leave.dto.LeaveCreateRequest;
 import com.employee.management.leave.dto.LeaveResponse;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,12 +11,6 @@ import org.springframework.web.bind.annotation.*;
 public class LeaveControllerImpl implements LeaveController {
 
     private final LeaveService leaveService;
-
-    @Override
-    @PostMapping
-    public ResponseEntity<LeaveResponse> create(@Valid @RequestBody LeaveCreateRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(leaveService.create(request));
-    }
 
     @Override
     @GetMapping("/{id}")
