@@ -6,6 +6,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Assumption : only id and email are needed by the consumer
+ */
+
 @Getter
 @Setter
 @Builder
@@ -14,7 +18,5 @@ import lombok.Setter;
 public class EmployeeResponse {
 
     private String id;
-    private String firstName;
-    private String lastName;
     private String email;
 }

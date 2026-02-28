@@ -10,6 +10,10 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
+/**
+ * API response for leave. Exposes only the fields required by the consumer;
+ * not all entity fields are included.
+ */
 @Getter
 @Setter
 @Builder
