@@ -14,9 +14,10 @@ import org.hibernate.annotations.UuidGenerator;
 
 import java.math.BigDecimal;
 
-/***
- *
- * Assumption: Compensation is representing the monthly compensation which varries based on bonuses ,raises ect
+/**
+ * Assumption:
+ * compensation can change frequently and historical records need to be maintained.
+ * Compensation will be added separately after the employee is created.
  */
 @Getter
 @Setter

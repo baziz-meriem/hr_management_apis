@@ -10,6 +10,7 @@ import com.employee.management.exception.DuplicateResourceException;
 import com.employee.management.exception.EmployeeNotFoundException;
 import com.employee.management.exception.LeaveRequestNotFoundException;
 import com.employee.management.leave.LeaveMapper;
+import com.employee.management.leave.LeaveDates;
 import com.employee.management.leave.LeaveRepository;
 import com.employee.management.leave.dto.LeaveCreateRequest;
 import com.employee.management.leave.dto.LeaveResponse;
@@ -106,13 +107,14 @@ public class EmployeeServiceImpl
         Employee employee = employeeRepository.findByIdAndDeletedAtIsNull(employeeId)
                 .orElseThrow(EmployeeNotFoundException::new);
 
-        if (leaveRepository.existsOverlappingLeave(employeeId, request.getStartDate(), request.getEndDate(),
+        var effectiveEndDate = LeaveDates.extendToEndOfWeek(request.getEndDate());
+        if (leaveRepository.existsOverlappingLeave(employeeId, request.getStartDate(), effectiveEndDate,
                 List.of(LeaveStatus.PENDING, LeaveStatus.APPROVED))) {
             throw new DuplicateResourceException("Leave already exists for this employee with overlapping dates");
         }
         LeaveRequest leave = LeaveRequest.builder()
                 .startDate(request.getStartDate())
-                .endDate(request.getEndDate())
+                .endDate(effectiveEndDate)
                 .type(request.getType())
                 .employee(employee)
                 .build();

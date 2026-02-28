@@ -1,4 +1,4 @@
-package com.employee.management.leave.dto;
+package com.employee.management.validation;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;

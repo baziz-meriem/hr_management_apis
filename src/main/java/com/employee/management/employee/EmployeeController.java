@@ -5,6 +5,8 @@ import com.employee.management.employee.dto.EmployeeResponse;
 import com.employee.management.employee.dto.EmployeeUpdateRequest;
 import com.employee.management.leave.dto.LeaveCreateRequest;
 import com.employee.management.leave.dto.LeaveResponse;
+
+import java.util.List;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -13,8 +15,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.List;
-
+/**
+ * Assumption: "Removing or deactivating employees" both refer to soft deletion
+ */
 @Tag(name = "Employees", description = "Employee management API")
 public interface EmployeeController {
 
@@ -35,7 +38,7 @@ public interface EmployeeController {
     @Operation(summary = "Delete employee", description = "Soft-deletes an employee")
     ResponseEntity<Void> deleteById(@Parameter(description = "Employee UUID") String id);
 
-    @Operation(summary = "Get leave by employee", description = "Returns all leave requests for an employee")
+    @Operation(summary = "Get leave by employee", description = "Returns leave requests history for an employee")
     ResponseEntity<List<LeaveResponse>> getLeaveByEmployeeId(@Parameter(description = "Employee UUID") String id);
 
     @Operation(summary = "Create leave for employee", description = "Submits a new leave request for an employee")

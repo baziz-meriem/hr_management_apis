@@ -2,6 +2,9 @@ package com.employee.management.constant;
 
 import com.employee.management.exception.InvalidLeaveStateException;
 
+/**
+ * Assumption: Approved and rejected statuses are terminal
+ */
 public enum LeaveStatus {
 
     PENDING,

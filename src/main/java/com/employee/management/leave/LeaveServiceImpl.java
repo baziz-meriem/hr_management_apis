@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -28,20 +29,20 @@ public class LeaveServiceImpl
     @Transactional
     public LeaveResponse create(LeaveCreateRequest request) {
         Employee employee = employeeRepository.findByIdAndDeletedAtIsNull(request.getEmployeeId())
-                                              .orElseThrow(EmployeeNotFoundException::new);
+                .orElseThrow(EmployeeNotFoundException::new);
+        LocalDate effectiveEndDate = LeaveDates.extendToEndOfWeek(request.getEndDate());
         if (leaveRepository.existsOverlappingLeave(employee.getId(),
-                                                   request.getStartDate(),
-                                                   request.getEndDate(),
-                                                   List.of(LeaveStatus.PENDING,
-                                                           LeaveStatus.APPROVED))) {
+                request.getStartDate(),
+                effectiveEndDate,
+                List.of(LeaveStatus.PENDING, LeaveStatus.APPROVED))) {
             throw new DuplicateResourceException("Leave already exists for this employee with overlapping dates");
         }
         LeaveRequest leave = LeaveRequest.builder()
-                                         .startDate(request.getStartDate())
-                                         .endDate(request.getEndDate())
-                                         .type(request.getType())
-                                         .employee(employee)
-                                         .build();
+                .startDate(request.getStartDate())
+                .endDate(effectiveEndDate)
+                .type(request.getType())
+                .employee(employee)
+                .build();
         LeaveRequest saved = leaveRepository.save(leave);
         return leaveMapper.toResponse(saved);
     }

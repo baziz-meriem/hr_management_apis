@@ -1,6 +1,7 @@
 package com.employee.management.leave.dto;
 
 import com.employee.management.constant.LeaveType;
+import com.employee.management.validation.ValidDateRange;
 import com.employee.management.validation.ValidUuid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
