@@ -2,6 +2,7 @@ package com.employee.management.leave.dto;
 
 import com.employee.management.constant.LeaveType;
 import com.employee.management.validation.ValidDateRange;
+import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,6 +20,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class LeaveCreateRequest {
 
+    @FutureOrPresent
     @NotNull(message = "Start date is required")
     private LocalDate startDate;
 
